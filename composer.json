@@ -1,0 +1,34 @@
+{
+    "name": "star/game-of-life",
+    "description": "Php game of life simulation",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yannick Voyer",
+            "email": "star.yvoyer@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Star\\GameOfLife\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Star\\GameOfLife\\": "tests"
+        }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "star/collection": "~1.0",
+        "symfony/console": "~2.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "behat/behat": "2.4.*@stable"
+    },
+    "config": {
+        "bin-dir": "bin/"
+    }
+}
