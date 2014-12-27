@@ -24,4 +24,9 @@ interface CellRenderer
      * @return string
      */
     public function render(Cell $cell);
+
+    /**
+     * @return string
+     */
+    public function renderLineFeed();
 }

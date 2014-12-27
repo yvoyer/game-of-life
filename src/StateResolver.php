@@ -97,4 +97,23 @@ final class StateResolver
 
         return $status;
     }
+
+    /**
+     * @param Cell $cell
+     *
+     * @throws \LogicException
+     * @return string
+     */
+    public function resolveContent(Cell $cell)
+    {
+        if ($cell->isAlive()) {
+            return $this->liveCellOutput();
+        }
+
+        if ($cell->isDead()) {
+            return $this->deadCellOutput();
+        }
+
+        throw new \LogicException('No content mapping was found for cell state.');
+    }
 }

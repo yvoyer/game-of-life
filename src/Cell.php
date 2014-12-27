@@ -99,4 +99,48 @@ class Cell
         }
         $this->status = $status;
     }
+
+    /**
+     * @param CellId $id
+     *
+     * @return bool
+     */
+    public function isNeighbour(CellId $id)
+    {
+        // horizontal
+        if ($this->id->x() == $id->x()) {
+            if (($this->id->y() + 1 == $id->y()) || ($this->id->y() - 1 == $id->y())) {
+                return true;
+            }
+        }
+
+        // vertical
+        if ($this->id->y() == $id->y()) {
+            if (($this->id->x() + 1 == $id->x()) || ($this->id->x() - 1 == $id->x())) {
+                return true;
+            }
+        }
+
+        // top left corner
+        if (($this->id->x() - 1 == $id->x()) && ($this->id->y() - 1 == $id->y())) {
+            return true;
+        }
+
+        // right bottom corner
+        if (($this->id->x() + 1 == $id->x()) && ($this->id->y() + 1 == $id->y())) {
+            return true;
+        }
+
+        // bottom left corner
+        if (($this->id->x() + 1 == $id->x()) && ($this->id->y() - 1 == $id->y())) {
+            return true;
+        }
+
+        // right top corner
+        if (($this->id->x() - 1 == $id->x()) && ($this->id->y() + 1 == $id->y())) {
+            return true;
+        }
+
+        return false;
+    }
 }

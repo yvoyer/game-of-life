@@ -8,6 +8,8 @@ use Behat\Gherkin\Node\PyStringNode,
     Behat\Gherkin\Node\TableNode;
 
 use Star\GameOfLife\World;
+use Star\GameOfLife\StateResolver;
+use Star\GameOfLife\ConsoleRenderer;
 use PHPUnit_Framework_Assert as Assert;
 
 /**
@@ -36,6 +38,11 @@ class FeatureContext extends BehatContext
     private $deadCell;
 
     /**
+     * @var StateResolver
+     */
+    private $stateResolver;
+
+    /**
      * Initializes context.
      * Every scenario gets it's own context object.
      *
@@ -43,6 +50,9 @@ class FeatureContext extends BehatContext
      */
     public function __construct(array $parameters)
     {
+        $this->stateResolver = new StateResolver();
+        $this->stateResolver->setDeadCellOutput('-');
+        $this->stateResolver->setLiveCellOutput('*');
     }
 
     /**
@@ -66,7 +76,7 @@ class FeatureContext extends BehatContext
      */
     public function iHaveTheFollowingWorld(TableNode $table)
     {
-        $this->world = World::fromArray($table->getHash());
+        $this->world = World::fromArray($table->getHash(), $this->stateResolver);
     }
 
     /**
@@ -74,7 +84,7 @@ class FeatureContext extends BehatContext
      */
     public function iRunTheSimulation()
     {
-        $this->output = $this->world->run();
+        $this->output = $this->world->run(new ConsoleRenderer($this->stateResolver));
     }
 
     /**
@@ -82,7 +92,6 @@ class FeatureContext extends BehatContext
      */
     public function theWorldShouldLookLike(PyStringNode $string)
     {
-        var_dump($string->getLines());
         Assert::assertSame($string->getRaw(), $this->output);
     }
 

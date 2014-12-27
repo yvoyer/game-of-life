@@ -7,8 +7,6 @@
 
 namespace Star\GameOfLife;
 
-use Star\Component\Collection\TypedCollection;
-
 /**
  * Class World
  *
@@ -21,7 +19,7 @@ final class World
     const CLASS_NAME = __CLASS__;
 
     /**
-     * @var Cell[]|TypedCollection
+     * @var Cell[]|CellCollection
      */
     private $cells;
 
@@ -31,11 +29,22 @@ final class World
     private $iteration = 0;
 
     /**
-     * @param Cell[]        $cells
+     * @var LifeResolver
      */
-    public function __construct(array $cells)
+    private $lifeResolver;
+
+    /**
+     * @param Cell[]       $cells
+     * @param LifeResolver $resolver todo remove when life resolver works
+     */
+    public function __construct(array $cells, LifeResolver $resolver = null)
     {
-        $this->cells = new TypedCollection(Cell::CLASS_NAME, $cells);
+        if (null === $resolver) {
+            $resolver = new LifeResolver();
+        }
+
+        $this->lifeResolver = $resolver;
+        $this->cells = new CellCollection($cells);
     }
 
     /**
@@ -43,7 +52,7 @@ final class World
      */
     public function size()
     {
-        return $this->cells->count();
+        return $this->cells->size();
     }
 
     /**
@@ -55,11 +64,7 @@ final class World
      */
     public function getContent(CellId $id, CellRenderer $renderer)
     {
-        $predicate = function (Cell $cell) use ($id) {
-            return $cell->id() == $id;
-        };
-
-        $cell = $this->cells->filter($predicate)->first();
+        $cell = $this->cells->findCellById($id);
         if (null === $cell) {
             throw new \RuntimeException("Cell with Id '{$id->x()},{$id->y()}' could not be found.");
         }
@@ -67,9 +72,36 @@ final class World
         return $renderer->render($cell);
     }
 
-    public function run()
+    /**
+     * @param CellRenderer $renderer
+     *
+     * @return string
+     */
+    public function run(CellRenderer $renderer)
     {
         $this->iteration ++;
+        $this->cells = $this->lifeResolver->resolveNextStage($this->cells);
+
+        return $this->render($renderer);
+    }
+
+    private function render(CellRenderer $renderer)
+    {
+        $cellCount = $this->size();
+        $string = '';
+        for ($i = 1; $i <= $cellCount; $i ++) {
+            $rows = $this->cells->findCellsOfRow($i);
+            if (empty($rows)) {
+                break; // Reach the end of the cells row
+            } else {
+                foreach ($rows as $column) {
+                    $string .= $renderer->render($column);
+                }
+                $string .= $renderer->renderLineFeed();
+            }
+        }
+
+        return $string;
     }
 
     /**

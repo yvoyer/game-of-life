@@ -23,12 +23,12 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->world = new World(array(new Cell(new CellId(1, 2), Cell::ALIVE)));
+        $this->world = new World(array(new Cell(new CellId(1, 2), Cell::ALIVE)), new StubLifeResolver());
     }
 
     public function test_should_have_size()
     {
-        $this->assertSame(6, $this->world->size());
+        $this->assertSame(1, $this->world->size());
     }
 
     public function test_should_return_cell_content()
@@ -45,11 +45,11 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
     public function test_should_increase_iteration()
     {
         $this->assertSame(0, $this->world->iteration());
-        $this->world->run();
+        $this->world->run($this->getMockCellRenderer());
         $this->assertSame(1, $this->world->iteration());
-        $this->world->run();
+        $this->world->run($this->getMockCellRenderer());
         $this->assertSame(2, $this->world->iteration());
-        $this->world->run();
+        $this->world->run($this->getMockCellRenderer());
         $this->assertSame(3, $this->world->iteration());
     }
 
@@ -72,15 +72,37 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
         $resolver->setDeadCellOutput('');
         $resolver->setLiveCellOutput('*');
 
-        $renderer = $this->getMockCellRenderer();
-
         $this->world = World::fromArray($array, $resolver);
-        $this->assertSame('', $this->world->getContent(new CellId(1, 1), $renderer));
-        $this->assertSame('*', $this->world->getContent(new CellId(1, 2), $renderer));
-        $this->assertSame('*', $this->world->getContent(new CellId(1, 3), $renderer));
-        $this->assertSame('*', $this->world->getContent(new CellId(2, 1), $renderer));
-        $this->assertSame('', $this->world->getContent(new CellId(2, 2), $renderer));
-        $this->assertSame('*', $this->world->getContent(new CellId(2, 3), $renderer));
+        $this->assertSame(6, $this->world->size());
+    }
+
+    public function test_should_return_output()
+    {
+        $this->world = new World(
+            array(
+                new Cell(new CellId(1, 1), Cell::ALIVE),
+                new Cell(new CellId(1, 2), Cell::ALIVE),
+                new Cell(new CellId(2, 1), Cell::ALIVE),
+                new Cell(new CellId(2, 2), Cell::ALIVE),
+            ),
+            new StubLifeResolver()
+        );
+
+        $expected = <<<STRING
+**_**_
+STRING;
+
+        $cellRenderer = $this->getMockCellRenderer();
+        $cellRenderer
+            ->expects($this->any())
+            ->method('render')
+            ->will($this->returnValue('*'));
+        $cellRenderer
+            ->expects($this->any())
+            ->method('renderLineFeed')
+            ->will($this->returnValue('_'));
+
+        $this->assertSame($expected, $this->world->run($cellRenderer));
     }
 
     /**
@@ -89,5 +111,13 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
     private function getMockCellRenderer()
     {
         return $this->getMock(CellRenderer::INTERFACE_NAME);
+    }
+}
+
+class StubLifeResolver extends LifeResolver
+{
+    public function resolveNextStage(CellCollection $collection)
+    {
+        return $collection;
     }
 }

@@ -23,8 +23,17 @@ final class StateResolverTest extends \PHPUnit_Framework_TestCase
      */
     private $resolver;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $cell;
+
     public function setUp()
     {
+        $this->cell = $this->getMockBuilder(Cell::CLASS_NAME)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->resolver = new StateResolver();
     }
 
@@ -70,5 +79,34 @@ final class StateResolverTest extends \PHPUnit_Framework_TestCase
     public function test_should_throw_exception_when_unable_to_resolver()
     {
         $this->resolver->resolveStatus('342');
+    }
+
+    public function test_should_resolve_alive_content()
+    {
+        $this->cell
+            ->expects($this->once())
+            ->method('isAlive')
+            ->will($this->returnValue(true));
+
+        $this->assertSame('*', $this->resolver->resolveContent($this->cell));
+    }
+
+    public function test_should_resolve_content()
+    {
+        $this->cell
+            ->expects($this->once())
+            ->method('isDead')
+            ->will($this->returnValue(true));
+
+        $this->assertSame(' ', $this->resolver->resolveContent($this->cell));
+    }
+
+    /**
+     * @expectedException        \LogicException
+     * @expectedExceptionMessage No content mapping was found for cell state.
+     */
+    public function test_should_throw_exception_when_unable_to_resolve_content()
+    {
+        $this->resolver->resolveContent($this->cell);
     }
 }
