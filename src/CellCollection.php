@@ -8,6 +8,7 @@
 namespace Star\GameOfLife;
 
 use Star\Component\Collection\TypedCollection;
+use Traversable;
 
 /**
  * Class CellCollection
@@ -16,7 +17,7 @@ use Star\Component\Collection\TypedCollection;
  *
  * @package Star\GameOfLife
  */
-final class CellCollection
+final class CellCollection implements \IteratorAggregate
 {
     /**
      * @var Cell[]|TypedCollection
@@ -91,5 +92,40 @@ final class CellCollection
         };
 
         return $this->cells->filter($predicate)->toArray();
+    }
+
+    /**
+     * @param CellId $id
+     *
+     * @return Cell[]
+     */
+    public function findAliveNeighboursCells(CellId $id)
+    {
+        $predicate = function(Cell $cell) use ($id) {
+            return $cell->isAlive() && $cell->isNeighbour($id);
+        };
+
+        return $this->cells->filter($predicate)->toArray();
+    }
+
+    /**
+     * @return CellCollection
+     */
+    public function duplicate()
+    {
+        $cells = array();
+        foreach ($this->cells as $cell) {
+            $cells[] = clone $cell;
+        }
+
+        return new CellCollection($cells);
+    }
+
+    /**
+     * @return Traversable
+     */
+    public function getIterator()
+    {
+        return $this->cells->getIterator();
     }
 }

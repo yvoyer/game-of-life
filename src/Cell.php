@@ -62,16 +62,6 @@ class Cell
     }
 
     /**
-     * @param StateResolver $configuration
-     *
-     * @return bool
-     */
-    public function matchConfiguration(StateResolver $configuration)
-    {
-//        return
-    }
-
-    /**
      * @return bool
      */
     public function isDead()
@@ -142,5 +132,15 @@ class Cell
         }
 
         return false;
+    }
+
+    public function kill()
+    {
+        $this->setStatus(self::DEAD);
+    }
+
+    public function resurrect()
+    {
+        $this->setStatus(self::ALIVE);
     }
 }

@@ -62,4 +62,12 @@ final class CellId
     {
         return $this->y;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->x() . ',' . $this->y();
+    }
 }

@@ -89,7 +89,7 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
         );
 
         $expected = <<<STRING
-**_**_
+**_**
 STRING;
 
         $cellRenderer = $this->getMockCellRenderer();

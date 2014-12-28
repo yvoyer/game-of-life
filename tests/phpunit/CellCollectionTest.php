@@ -137,4 +137,73 @@ final class CellCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(count($expected), $actual);
         $this->assertSame($expected, $actual);
     }
+
+    public function test_should_return_alive_neighbours()
+    {
+        $this->collection = new CellCollection(
+            array(
+                new Cell(new CellId(1, 1), Cell::ALIVE),
+                new Cell(new CellId(1, 2), Cell::ALIVE),
+                new Cell(new CellId(1, 3), Cell::ALIVE),
+                new Cell(new CellId(2, 1), Cell::ALIVE),
+                new Cell(new CellId(2, 2), Cell::ALIVE),
+                new Cell(new CellId(2, 3), Cell::ALIVE),
+                new Cell(new CellId(3, 1), Cell::ALIVE),
+                new Cell(new CellId(3, 2), Cell::ALIVE),
+                new Cell(new CellId(3, 3), Cell::ALIVE),
+            )
+        );
+
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(1, 1)));
+        $this->assertCount(5, $this->collection->findAliveNeighboursCells(new CellId(1, 2)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(1, 3)));
+        $this->assertCount(5, $this->collection->findAliveNeighboursCells(new CellId(2, 1)));
+        $this->assertCount(8, $this->collection->findAliveNeighboursCells(new CellId(2, 2)));
+        $this->assertCount(5, $this->collection->findAliveNeighboursCells(new CellId(2, 3)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(3, 1)));
+        $this->assertCount(5, $this->collection->findAliveNeighboursCells(new CellId(3, 2)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(3, 3)));
+    }
+
+    public function test_should_remove_dead_cell_from_active_neighbours()
+    {
+        /**
+         * *-*
+         * -*-
+         * *-*
+         */
+        $this->collection = new CellCollection(
+            array(
+                new Cell(new CellId(1, 1), Cell::ALIVE),
+                new Cell(new CellId(1, 2), Cell::DEAD),
+                new Cell(new CellId(1, 3), Cell::ALIVE),
+                new Cell(new CellId(2, 1), Cell::DEAD),
+                new Cell(new CellId(2, 2), Cell::ALIVE),
+                new Cell(new CellId(2, 3), Cell::DEAD),
+                new Cell(new CellId(3, 1), Cell::ALIVE),
+                new Cell(new CellId(3, 2), Cell::DEAD),
+                new Cell(new CellId(3, 3), Cell::ALIVE),
+            )
+        );
+
+        $this->assertCount(1, $this->collection->findAliveNeighboursCells(new CellId(1, 1)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(1, 2)));
+        $this->assertCount(1, $this->collection->findAliveNeighboursCells(new CellId(1, 3)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(2, 1)));
+        $this->assertCount(4, $this->collection->findAliveNeighboursCells(new CellId(2, 2)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(2, 3)));
+        $this->assertCount(1, $this->collection->findAliveNeighboursCells(new CellId(3, 1)));
+        $this->assertCount(3, $this->collection->findAliveNeighboursCells(new CellId(3, 2)));
+        $this->assertCount(1, $this->collection->findAliveNeighboursCells(new CellId(3, 3)));
+    }
+
+    public function test_should_clone_collection()
+    {
+        $collection = $this->collection->duplicate();
+
+        $this->assertNotSame($collection, $this->collection);
+        $this->assertNotSame($this->cell1, $collection->findCellById(new CellId(1, 1)));
+        $this->assertNotSame($this->cell2, $collection->findCellById(new CellId(1, 2)));
+        $this->assertNotSame($this->cell3, $collection->findCellById(new CellId(3, 1)));
+    }
 }

@@ -7,32 +7,65 @@ Feature:
     Given The live cell representation is '*'
     And The dead cell representation is '-'
 
-  Scenario: Kill a cell with no cells around
+  Scenario: Should supports Blinkers
     Given I have the following world:
-      | 1 | 2 | 3 |
-      | - | - | - |
-      | - | * | * |
-      | - | * | - |
+      | 1 | 2 | 3 | 4 | 5 |
+      | - | - | - | - | - |
+      | - | - | - | - | - |
+      | - | * | * | * | - |
+      | - | - | - | - | - |
+      | - | - | - | - | - |
     When I run the simulation
     Then The world should look like:
     """
----
----
----
+-----
+--*--
+--*--
+--*--
+-----
 """
     And The iteration count should be 1
 
-  Scenario: Cell survive when at least 3 cell active around
+  Scenario: Should supports Beacon
     Given I have the following world:
-      | 1 | 2 | 3 |
-      | - | - | - |
-      | * | - | * |
-      | - | * | - |
+      | 1 | 2 | 3 | 4 | 5 | 6 |
+      | - | - | - | - | - | - |
+      | - | * | * | - | - | - |
+      | - | * | - | - | - | - |
+      | - | - | - | - | * | - |
+      | - | - | - | * | * | - |
+      | - | - | - | - | - | - |
     When I run the simulation
     Then The world should look like:
     """
----
--*-
----
+------
+-**---
+-**---
+---**-
+---**-
+------
 """
     And The iteration count should be 1
+
+  Scenario: Should supports Glider
+    Given I have the following world:
+      | 1 | 2 | 3 | 4 | 5 | 6 |
+      | * | - | - | - | - | - |
+      | - | * | * | - | - | - |
+      | * | * | - | - | - | - |
+      | - | - | - | - | - | - |
+      | - | - | - | - | - | - |
+      | - | - | - | - | - | - |
+    When I run the simulation
+    And I run the simulation
+    And I run the simulation
+    Then The world should look like:
+    """
+------
+--*---
+*-*---
+-**---
+------
+------
+"""
+    And The iteration count should be 3

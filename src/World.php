@@ -88,20 +88,21 @@ final class World
     private function render(CellRenderer $renderer)
     {
         $cellCount = $this->size();
-        $string = '';
+        $aLine = array();
         for ($i = 1; $i <= $cellCount; $i ++) {
             $rows = $this->cells->findCellsOfRow($i);
             if (empty($rows)) {
                 break; // Reach the end of the cells row
             } else {
+                $line = '';
                 foreach ($rows as $column) {
-                    $string .= $renderer->render($column);
+                    $line .= $renderer->render($column);
                 }
-                $string .= $renderer->renderLineFeed();
+                $aLine[] = $line;
             }
         }
 
-        return $string;
+        return implode($renderer->renderLineFeed(), $aLine);
     }
 
     /**

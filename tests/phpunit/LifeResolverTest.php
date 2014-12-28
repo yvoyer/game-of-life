@@ -50,29 +50,106 @@ final class LifeResolverTest extends \PHPUnit_Framework_TestCase
         );
 
         $actual = $this->resolver->resolveNextStage($collection);
-        $this->assertTrue($actual->findCellById(new CellId(1, 1))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(1, 2))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(1, 3))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(2, 1))->isDead());
         $this->assertTrue($actual->findCellById(new CellId(2, 2))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(2, 3))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(3, 1))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(3, 2))->isDead());
-        $this->assertTrue($actual->findCellById(new CellId(3, 3))->isDead());
     }
 
-    public function test_live_cells_with_two_or_three_live_neighbors_should_survive()
+    public function test_live_cells_with_two_live_neighbors_should_survive()
     {
-        $this->markTestIncomplete(__METHOD__);
+        /**
+         * ---
+         * -**
+         * --*
+         */
+        $collection = new CellCollection(
+            array(
+                new Cell(new CellId(1, 1), Cell::DEAD),
+                new Cell(new CellId(1, 2), Cell::DEAD),
+                new Cell(new CellId(1, 3), Cell::DEAD),
+                new Cell(new CellId(2, 1), Cell::DEAD),
+                new Cell(new CellId(2, 2), Cell::ALIVE),
+                new Cell(new CellId(2, 3), Cell::ALIVE),
+                new Cell(new CellId(3, 1), Cell::DEAD),
+                new Cell(new CellId(3, 2), Cell::DEAD),
+                new Cell(new CellId(3, 3), Cell::ALIVE),
+            )
+        );
+
+        $actual = $this->resolver->resolveNextStage($collection);
+        $this->assertTrue($actual->findCellById(new CellId(2, 2))->isAlive());
+    }
+
+    public function test_live_cells_with_three_live_neighbors_should_survive()
+    {
+        /**
+         * ---
+         * -**
+         * -**
+         */
+        $collection = new CellCollection(
+            array(
+                new Cell(new CellId(1, 1), Cell::DEAD),
+                new Cell(new CellId(1, 2), Cell::DEAD),
+                new Cell(new CellId(1, 3), Cell::DEAD),
+                new Cell(new CellId(2, 1), Cell::DEAD),
+                new Cell(new CellId(2, 2), Cell::ALIVE),
+                new Cell(new CellId(2, 3), Cell::ALIVE),
+                new Cell(new CellId(3, 1), Cell::DEAD),
+                new Cell(new CellId(3, 2), Cell::ALIVE),
+                new Cell(new CellId(3, 3), Cell::ALIVE),
+            )
+        );
+
+        $actual = $this->resolver->resolveNextStage($collection);
+        $this->assertTrue($actual->findCellById(new CellId(2, 2))->isAlive());
     }
 
     public function test_live_cells_with_more_than_3_neighbors_should_die_of_overpopulation()
     {
-        $this->markTestIncomplete(__METHOD__);
+        /**
+         * ---
+         * -**
+         * ***
+         */
+        $collection = new CellCollection(
+            array(
+                new Cell(new CellId(1, 1), Cell::DEAD),
+                new Cell(new CellId(1, 2), Cell::DEAD),
+                new Cell(new CellId(1, 3), Cell::DEAD),
+                new Cell(new CellId(2, 1), Cell::DEAD),
+                new Cell(new CellId(2, 2), Cell::ALIVE),
+                new Cell(new CellId(2, 3), Cell::ALIVE),
+                new Cell(new CellId(3, 1), Cell::ALIVE),
+                new Cell(new CellId(3, 2), Cell::ALIVE),
+                new Cell(new CellId(3, 3), Cell::ALIVE),
+            )
+        );
+
+        $actual = $this->resolver->resolveNextStage($collection);
+        $this->assertTrue($actual->findCellById(new CellId(2, 2))->isDead());
     }
 
     public function test_dead_cells_with_three_live_neighbors_should_be_reborn()
     {
-        $this->markTestIncomplete(__METHOD__);
+        /**
+         * ---
+         * --*
+         * -**
+         */
+        $collection = new CellCollection(
+            array(
+                new Cell(new CellId(1, 1), Cell::DEAD),
+                new Cell(new CellId(1, 2), Cell::DEAD),
+                new Cell(new CellId(1, 3), Cell::DEAD),
+                new Cell(new CellId(2, 1), Cell::DEAD),
+                new Cell(new CellId(2, 2), Cell::DEAD),
+                new Cell(new CellId(2, 3), Cell::ALIVE),
+                new Cell(new CellId(3, 1), Cell::DEAD),
+                new Cell(new CellId(3, 2), Cell::ALIVE),
+                new Cell(new CellId(3, 3), Cell::ALIVE),
+            )
+        );
+
+        $actual = $this->resolver->resolveNextStage($collection);
+        $this->assertTrue($actual->findCellById(new CellId(2, 2))->isAlive());
     }
 }

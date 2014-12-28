@@ -21,14 +21,37 @@ class LifeResolver
     /**
      * Returns the next stage of evolution.
      *
-     * @param CellCollection $collection
+     * @param CellCollection|Cell[] $collection
      *
      * @return CellCollection
      */
     public function resolveNextStage(CellCollection $collection)
     {
-        $aliveCells = $collection->findAliveCells();
+        $nextStage = $collection->duplicate();
 
-        return $collection;
+        foreach ($collection as $cell) {
+            $id = $cell->id();
+
+            $aliveNeighbourCells = $collection->findAliveNeighboursCells($id);
+            $aliveNeighborsCount = count($aliveNeighbourCells);
+
+            $survives = false;
+            if ($cell->isAlive() && $aliveNeighborsCount == 2) {
+                $survives = true;
+            }
+
+            if ($aliveNeighborsCount == 3) {
+                $survives = true;
+            }
+
+            $nextStageCell = $nextStage->findCellById($id);
+            if ($survives) {
+                $nextStageCell->resurrect();
+            } else {
+                $nextStageCell->kill();
+            }
+        }
+
+        return $nextStage;
     }
 }

@@ -100,6 +100,6 @@ class FeatureContext extends BehatContext
      */
     public function theIterationCountShouldBe($iterationCount)
     {
-        Assert::assertSame($iterationCount, $this->world->iteration());
+        Assert::assertSame((int) $iterationCount, $this->world->iteration());
     }
 }

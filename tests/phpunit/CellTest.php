@@ -95,4 +95,20 @@ final class CellTest extends \PHPUnit_Framework_TestCase
             array(false, 5, 5),
         );
     }
+
+    public function test_should_kill_cell()
+    {
+        $cell = new Cell(new CellId(1, 2), Cell::ALIVE);
+        $this->assertTrue($cell->isAlive());
+        $cell->kill();
+        $this->assertTrue($cell->isDead());
+    }
+
+    public function test_should_reanimate_cell()
+    {
+        $cell = new Cell(new CellId(1, 2), Cell::DEAD);
+        $this->assertTrue($cell->isDead());
+        $cell->resurrect();
+        $this->assertTrue($cell->isAlive());
+    }
 }
