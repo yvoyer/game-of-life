@@ -7,6 +7,8 @@
 
 namespace Star\GameOfLife;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 /**
  * Class ConsoleRenderer
  *
@@ -24,11 +26,18 @@ final class ConsoleRenderer implements CellRenderer
     private $resolver;
 
     /**
-     * @param StateResolver $resolver
+     * @var OutputInterface
      */
-    public function __construct(StateResolver $resolver)
+    private $output;
+
+    /**
+     * @param StateResolver   $resolver
+     * @param OutputInterface $output
+     */
+    public function __construct(StateResolver $resolver, OutputInterface $output)
     {
         $this->resolver = $resolver;
+        $this->output = $output;
     }
 
     /**
@@ -47,5 +56,22 @@ final class ConsoleRenderer implements CellRenderer
     public function renderLineFeed()
     {
         return "\n";
+    }
+
+    /**
+     * @param CellCollection $line
+     *
+     * @return string
+     */
+    public function renderLine(CellCollection $line)
+    {
+        $string = '';
+        foreach ($line as $column) {
+            $string .= $this->render($column);
+        }
+
+        $this->output->writeln($string);
+
+        return $string;
     }
 }

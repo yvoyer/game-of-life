@@ -94,11 +94,7 @@ final class World
             if (empty($rows)) {
                 break; // Reach the end of the cells row
             } else {
-                $line = '';
-                foreach ($rows as $column) {
-                    $line .= $renderer->render($column);
-                }
-                $aLine[] = $line;
+                $aLine[] = $renderer->renderLine(new CellCollection($rows));
             }
         }
 

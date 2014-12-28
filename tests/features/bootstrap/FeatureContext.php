@@ -84,7 +84,8 @@ class FeatureContext extends BehatContext
      */
     public function iRunTheSimulation()
     {
-        $this->output = $this->world->run(new ConsoleRenderer($this->stateResolver));
+        $output = new \Symfony\Component\Console\Output\NullOutput();
+        $this->output = $this->world->run(new ConsoleRenderer($this->stateResolver, $output));
     }
 
     /**

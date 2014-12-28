@@ -76,35 +76,6 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(6, $this->world->size());
     }
 
-    public function test_should_return_output()
-    {
-        $this->world = new World(
-            array(
-                new Cell(new CellId(1, 1), Cell::ALIVE),
-                new Cell(new CellId(1, 2), Cell::ALIVE),
-                new Cell(new CellId(2, 1), Cell::ALIVE),
-                new Cell(new CellId(2, 2), Cell::ALIVE),
-            ),
-            new StubLifeResolver()
-        );
-
-        $expected = <<<STRING
-**_**
-STRING;
-
-        $cellRenderer = $this->getMockCellRenderer();
-        $cellRenderer
-            ->expects($this->any())
-            ->method('render')
-            ->will($this->returnValue('*'));
-        $cellRenderer
-            ->expects($this->any())
-            ->method('renderLineFeed')
-            ->will($this->returnValue('_'));
-
-        $this->assertSame($expected, $this->world->run($cellRenderer));
-    }
-
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */

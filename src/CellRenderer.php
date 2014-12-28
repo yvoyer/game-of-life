@@ -29,4 +29,11 @@ interface CellRenderer
      * @return string
      */
     public function renderLineFeed();
+
+    /**
+     * @param CellCollection $line
+     *
+     * @return string
+     */
+    public function renderLine(CellCollection $line);
 }
