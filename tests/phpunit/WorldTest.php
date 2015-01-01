@@ -7,6 +7,8 @@
 
 namespace Star\GameOfLife;
 
+use Star\GameOfLife\Renderer\CellRenderer;
+
 /**
  * Class WorldTest
  *
@@ -31,25 +33,10 @@ final class WorldTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $this->world->size());
     }
 
-    public function test_should_return_cell_content()
-    {
-        $cellRenderer = $this->getMockCellRenderer();
-        $cellRenderer
-            ->expects($this->once())
-            ->method('render')
-            ->will($this->returnValue('*'));
-
-        $this->assertSame('*', $this->world->getContent(new CellId(1, 2), $cellRenderer));
-    }
-
     public function test_should_increase_iteration()
     {
         $this->assertSame(0, $this->world->iteration());
-        $this->world->run($this->getMockCellRenderer());
-        $this->assertSame(1, $this->world->iteration());
-        $this->world->run($this->getMockCellRenderer());
-        $this->assertSame(2, $this->world->iteration());
-        $this->world->run($this->getMockCellRenderer());
+        $this->world->run($this->getMockCellRenderer(), 3);
         $this->assertSame(3, $this->world->iteration());
     }
 

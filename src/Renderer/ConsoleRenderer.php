@@ -5,8 +5,11 @@
  * (c) Yannick Voyer (http://github.com/yvoyer)
  */
 
-namespace Star\GameOfLife;
+namespace Star\GameOfLife\Renderer;
 
+use Star\GameOfLife\Cell;
+use Star\GameOfLife\CellCollection;
+use Star\GameOfLife\StateResolver;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -14,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author  Yannick Voyer (http://github.com/yvoyer)
  *
- * @package Star\GameOfLife
+ * @package Star\GameOfLife\Renderer
  */
 final class ConsoleRenderer implements CellRenderer
 {
@@ -45,17 +48,9 @@ final class ConsoleRenderer implements CellRenderer
      *
      * @return string
      */
-    public function render(Cell $cell)
+    private function renderCell(Cell $cell)
     {
         return $this->resolver->resolveContent($cell);
-    }
-
-    /**
-     * @return string
-     */
-    public function renderLineFeed()
-    {
-        return "\n";
     }
 
     /**
@@ -63,15 +58,32 @@ final class ConsoleRenderer implements CellRenderer
      *
      * @return string
      */
-    public function renderLine(CellCollection $line)
+    private function renderLine(CellCollection $line)
     {
         $string = '';
         foreach ($line as $column) {
-            $string .= $this->render($column);
+            $string .= $this->renderCell($column);
         }
 
         $this->output->writeln($string);
 
         return $string;
+    }
+
+    /**
+     * @param CellCollection $cells
+     */
+    public function renderGrid(CellCollection $cells)
+    {
+        $cellCount = $cells->size();
+        for ($i = 1; $i <= $cellCount; $i ++) {
+            $rows = $cells->findCellsOfRow($i);
+
+            if (empty($rows)) {
+                break; // Reach the end of the cells row
+            }
+
+            $this->renderLine(new CellCollection($rows));
+        }
     }
 }

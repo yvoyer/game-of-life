@@ -9,7 +9,7 @@ use Behat\Gherkin\Node\PyStringNode,
 
 use Star\GameOfLife\World;
 use Star\GameOfLife\StateResolver;
-use Star\GameOfLife\ConsoleRenderer;
+use Star\GameOfLife\Renderer\ConsoleRenderer;
 use PHPUnit_Framework_Assert as Assert;
 
 /**
@@ -23,7 +23,7 @@ class FeatureContext extends BehatContext
     private $world;
 
     /**
-     * @var string
+     * @var \Symfony\Component\Console\Output\BufferedOutput
      */
     private $output;
 
@@ -80,12 +80,16 @@ class FeatureContext extends BehatContext
     }
 
     /**
-     * @When /^I run the simulation$/
+     * @When /^I run the simulation with (\d+) iteration$/
      */
-    public function iRunTheSimulation()
+    public function iRunTheSimulationWithIteration($maxIteration)
     {
-        $output = new \Symfony\Component\Console\Output\NullOutput();
-        $this->output = $this->world->run(new ConsoleRenderer($this->stateResolver, $output));
+        $this->output = new \Symfony\Component\Console\Output\BufferedOutput();
+        $renderer = new TestRenderer(
+            new ConsoleRenderer($this->stateResolver, $this->output),
+            $this->output
+        );
+        $this->world->run($renderer, $maxIteration);
     }
 
     /**
@@ -93,7 +97,7 @@ class FeatureContext extends BehatContext
      */
     public function theWorldShouldLookLike(PyStringNode $string)
     {
-        Assert::assertSame($string->getRaw(), $this->output);
+        Assert::assertContains($string->getRaw(), $this->output->fetch());
     }
 
     /**
@@ -102,5 +106,35 @@ class FeatureContext extends BehatContext
     public function theIterationCountShouldBe($iterationCount)
     {
         Assert::assertSame((int) $iterationCount, $this->world->iteration());
+    }
+}
+
+class TestRenderer implements \Star\GameOfLife\Renderer\CellRenderer
+{
+    /**
+     * @var \Star\GameOfLife\Renderer\CellRenderer
+     */
+    private $renderer;
+
+    /**
+     * @var \Symfony\Component\Console\Output\BufferedOutput
+     */
+    private $output;
+
+    public function __construct(
+        \Star\GameOfLife\Renderer\CellRenderer $renderer,
+        \Symfony\Component\Console\Output\BufferedOutput $output
+    ) {
+        $this->renderer = $renderer;
+        $this->output = $output;
+    }
+
+    /**
+     * @param \Star\GameOfLife\CellCollection $cells
+     */
+    public function renderGrid(\Star\GameOfLife\CellCollection $cells)
+    {
+        $this->output->fetch();
+        $this->renderer->renderGrid($cells);
     }
 }

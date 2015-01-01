@@ -7,6 +7,7 @@
 
 namespace Star\GameOfLife;
 
+use Star\GameOfLife\Renderer\ConsoleRenderer;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -52,9 +53,10 @@ final class GameOfLife
 
     /**
      * @param OutputInterface $output
+     * @param int             $maximumIteration
      */
-    public function run(OutputInterface $output)
+    public function run(OutputInterface $output, $maximumIteration)
     {
-        $this->world->run(new ConsoleRenderer($this->resolver, $output));
+        $this->world->run(new ConsoleRenderer($this->resolver, $output), $maximumIteration);
     }
 }

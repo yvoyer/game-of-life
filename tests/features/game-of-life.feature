@@ -15,7 +15,7 @@ Feature:
       | - | * | * | * | - |
       | - | - | - | - | - |
       | - | - | - | - | - |
-    When I run the simulation
+    When I run the simulation with 1 iteration
     Then The world should look like:
     """
 -----
@@ -35,7 +35,7 @@ Feature:
       | - | - | - | - | * | - |
       | - | - | - | * | * | - |
       | - | - | - | - | - | - |
-    When I run the simulation
+    When I run the simulation with 1 iteration
     Then The world should look like:
     """
 ------
@@ -56,9 +56,7 @@ Feature:
       | - | - | - | - | - | - |
       | - | - | - | - | - | - |
       | - | - | - | - | - | - |
-    When I run the simulation
-    And I run the simulation
-    And I run the simulation
+    When I run the simulation with 3 iteration
     Then The world should look like:
     """
 ------

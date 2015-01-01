@@ -34,9 +34,6 @@ final class RunCommand extends Command
         $max = $input->getOption('maximum-iteration');
 
         $gameOfLife = new GameOfLife();
-
-        for ($i = 0; $i < $max; $i++) {
-            $gameOfLife->run($output);
-        }
+        $gameOfLife->run($output, $max);
     }
 }

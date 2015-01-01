@@ -7,6 +7,8 @@
 
 namespace Star\GameOfLife;
 
+use Star\GameOfLife\Renderer\CellRenderer;
+
 /**
  * Class World
  *
@@ -56,49 +58,16 @@ final class World
     }
 
     /**
-     * @param CellId $id
      * @param CellRenderer $renderer
-     *
-     * @throws \RuntimeException
-     * @return string
+     * @param int          $maximumIteration
      */
-    public function getContent(CellId $id, CellRenderer $renderer)
+    public function run(CellRenderer $renderer, $maximumIteration)
     {
-        $cell = $this->cells->findCellById($id);
-        if (null === $cell) {
-            throw new \RuntimeException("Cell with Id '{$id->x()},{$id->y()}' could not be found.");
+        for ($i = 0; $i < $maximumIteration; $i++) {
+            $this->iteration ++;
+            $this->cells = $this->lifeResolver->resolveNextStage($this->cells);
+            $renderer->renderGrid($this->cells);
         }
-
-        return $renderer->render($cell);
-    }
-
-    /**
-     * @param CellRenderer $renderer
-     *
-     * @return string
-     */
-    public function run(CellRenderer $renderer)
-    {
-        $this->iteration ++;
-        $this->cells = $this->lifeResolver->resolveNextStage($this->cells);
-
-        return $this->render($renderer);
-    }
-
-    private function render(CellRenderer $renderer)
-    {
-        $cellCount = $this->size();
-        $aLine = array();
-        for ($i = 1; $i <= $cellCount; $i ++) {
-            $rows = $this->cells->findCellsOfRow($i);
-            if (empty($rows)) {
-                break; // Reach the end of the cells row
-            } else {
-                $aLine[] = $renderer->renderLine(new CellCollection($rows));
-            }
-        }
-
-        return implode($renderer->renderLineFeed(), $aLine);
     }
 
     /**
